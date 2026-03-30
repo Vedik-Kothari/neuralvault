@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { RefreshCw } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   BarChart2, Shield, Lock,
-  AlertTriangle, Clock, CheckCircle,
+  AlertTriangle, CheckCircle,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import { useStore } from "@/store/useStore";
@@ -41,7 +42,6 @@ function KpiCard({
         glowColor={color + "33"}
         className="p-5 relative overflow-hidden"
       >
-        {/* BG glow */}
         <div
           className="absolute inset-0 rounded-2xl opacity-5"
           style={{ background: color }}
@@ -51,10 +51,7 @@ function KpiCard({
             <Icon size={18} style={{ color }} />
             <div
               className="w-2 h-2 rounded-full animate-led-blink"
-              style={{
-                background: color,
-                boxShadow: `0 0 8px ${color}`,
-              }}
+              style={{ background: color, boxShadow: `0 0 8px ${color}` }}
             />
           </div>
           <div
@@ -77,12 +74,21 @@ export default function DashboardPage() {
   const [logs,    setLogs]    = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // ── Fetch function (reusable) ──
+  const fetchLogs = useCallback(() => {
+    setLoading(true);
     apiGetHistory(50)
       .then(d => setLogs(d.history || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // ── Initial load + auto-refresh every 30s ──
+  useEffect(() => {
+    fetchLogs();
+    const interval = setInterval(fetchLogs, 30000);
+    return () => clearInterval(interval);
+  }, [fetchLogs]);
 
   if (user?.role !== "admin") {
     return (
@@ -118,37 +124,62 @@ export default function DashboardPage() {
   const granted    = logs.filter(l => l.access_granted).length;
   const denied     = total - granted;
   const injections = logs.filter(l => l.injection_detected).length;
-  const avgLat     = total > 0
-    ? (logs.reduce((s, l) => s + (l.latency_ms || 0), 0) / total).toFixed(0)
-    : 0;
 
   return (
     <AppShell showIntel={false}>
       <div className="h-full overflow-y-auto px-8 py-8">
-        {/* Header */}
+
+        {/* ── Header with refresh button ── */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 flex items-center justify-between"
         >
-          <h1 className="font-head text-2xl font-bold tracking-widest
-                         text-white mb-2">
-            SYSTEM INTELLIGENCE
-          </h1>
-          <p className="text-sm text-muted">
-            Real-time audit logs and security metrics
-          </p>
+          <div>
+            <h1 className="font-head text-2xl font-bold tracking-widest
+                           text-white mb-2">
+              SYSTEM INTELLIGENCE
+            </h1>
+            <p className="text-sm text-muted">
+              Real-time audit logs and security metrics
+            </p>
+          </div>
+
+          {/* Refresh button */}
+          <motion.button
+            onClick={fetchLogs}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl
+                       text-sm font-medium transition-all disabled:opacity-50"
+            style={{
+              background: "rgba(124,58,237,0.12)",
+              border: "1px solid rgba(124,58,237,0.3)",
+              color: "#a78bfa",
+            }}
+          >
+            <motion.div
+              animate={loading ? { rotate: 360 } : { rotate: 0 }}
+              transition={loading
+                ? { duration: 1, repeat: Infinity, ease: "linear" }
+                : { duration: 0.3 }}
+            >
+              <RefreshCw size={14} />
+            </motion.div>
+            {loading ? "Refreshing..." : "Refresh"}
+          </motion.button>
         </motion.div>
 
-        {/* KPI Grid */}
+        {/* ── KPI Grid ── */}
         <div className="grid grid-cols-4 gap-4 mb-8">
-          <KpiCard icon={BarChart2}    label="Total Queries"      value={total}      color="#0ea5e9" delay={0}   />
-          <KpiCard icon={CheckCircle}  label="Access Granted"     value={granted}    color="#10b981" delay={0.1} />
-          <KpiCard icon={Lock}         label="Access Denied"      value={denied}     color="#f59e0b" delay={0.2} />
+          <KpiCard icon={BarChart2}     label="Total Queries"      value={total}      color="#0ea5e9" delay={0}   />
+          <KpiCard icon={CheckCircle}   label="Access Granted"     value={granted}    color="#10b981" delay={0.1} />
+          <KpiCard icon={Lock}          label="Access Denied"      value={denied}     color="#f59e0b" delay={0.2} />
           <KpiCard icon={AlertTriangle} label="Injections Blocked" value={injections} color="#ef4444" delay={0.3} />
         </div>
 
-        {/* Audit table */}
+        {/* ── Audit table ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -163,9 +194,14 @@ export default function DashboardPage() {
                 Audit Log
               </span>
             </div>
-            <span className="text-xs text-muted">
-              Last {Math.min(50, total)} of {total} queries
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted">
+                Auto-refreshes every 30s
+              </span>
+              <span className="text-xs text-muted">
+                Last {Math.min(50, total)} of {total} queries
+              </span>
+            </div>
           </div>
 
           {loading ? (
@@ -173,6 +209,10 @@ export default function DashboardPage() {
               {[1,2,3,4,5].map(i => (
                 <div key={i} className="skeleton h-10 rounded-xl" />
               ))}
+            </div>
+          ) : logs.length === 0 ? (
+            <div className="p-12 text-center text-muted text-sm">
+              No queries yet. Start chatting to see audit logs here.
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -221,18 +261,18 @@ export default function DashboardPage() {
                       </td>
                       <td className="px-5 py-3">
                         {log.injection_detected ? (
-                          <span className="flex items-center gap-1 text-[11px]
-                                           text-red-400">
+                          <span className="flex items-center gap-1
+                                           text-[11px] text-red-400">
                             <AlertTriangle size={10} /> Blocked
                           </span>
                         ) : log.access_granted ? (
-                          <span className="flex items-center gap-1 text-[11px]
-                                           text-green">
+                          <span className="flex items-center gap-1
+                                           text-[11px] text-green">
                             <CheckCircle size={10} /> Granted
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-[11px]
-                                           text-amber">
+                          <span className="flex items-center gap-1
+                                           text-[11px] text-amber">
                             <Lock size={10} /> Denied
                           </span>
                         )}
