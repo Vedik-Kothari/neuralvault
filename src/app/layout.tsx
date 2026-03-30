@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "NeuralVault — AI Command Center",
   description: "RBAC-Secured Enterprise Knowledge Base",
+  icons: {
+    icon:    "/favicon.svg",
+    apple:   "/favicon.svg",
+    shortcut:"/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -13,12 +18,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-bg text-white font-ui antialiased min-h-screen">
+      <head>
+        <link
+          rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"
+        />
+      </head>
+      <body className="bg-bg text-white overflow-hidden h-screen w-screen">
         <div className="bg-mesh" />
         <div className="scan-line" />
-        <main className="relative z-10 w-full min-h-screen">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );
