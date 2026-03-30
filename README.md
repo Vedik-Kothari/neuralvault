@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 NeuralVault (Frontend)
 
-## Getting Started
+> A zero-friction, interactive interface for an enterprise-grade Retrieval-Augmented Generation (RAG) system.
 
-First, run the development server:
+---
+
+## 🚀 Overview
+
+NeuralVault is a modern, high-performance frontend built to interact with a secure RAG backend. It delivers a seamless user experience for document upload, querying, and knowledge retrieval — designed to feel fast, reactive, and intelligent.
+
+---
+
+## ✨ Features
+
+* ⚡ **Real-time query interface** powered by RAG
+* 📂 **Document upload UI** with validation
+* 🎯 **Role-aware interaction (RBAC-integrated)**
+* 🎨 **Modern UI with animations (Framer Motion)**
+* ⚙️ **Optimized performance (Turbopack + Next.js App Router)**
+* 🔐 **JWT-based authentication flow**
+
+---
+
+## 🧱 Tech Stack
+
+* **Framework:** Next.js (App Router)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS
+* **Animations:** Framer Motion
+* **State Management:** React Hooks
+* **Deployment:** Vercel
+
+---
+
+## 🧠 How It Works
+
+1. User logs in → receives JWT
+2. Uploads documents → sent to backend
+3. Queries knowledge base
+4. Backend performs RAG → returns answer
+5. UI renders response with smooth animations
+
+---
+
+## 📦 Installation
 
 ```bash
+git clone https://github.com/Vedik-Kothari/neuralvault
+cd neuralvault
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file:
 
-## Learn More
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deployed on **Vercel**
 
-## Deploy on Vercel
+```bash
+vercel
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📸 UI Highlights
+
+* Interactive cursor-based animations
+* Smooth transitions between states
+* Minimalist, high-performance layout
+
+---
+
+## 🔗 Backend
+
+This frontend connects to:
+
+👉 https://github.com/Vedik-Kothari/neuralvault-api
+
+---
+
+## 🧩 Future Improvements
+
+* Streaming responses (real-time tokens)
+* Chat history persistence
+* Dark/light theme toggle
+* Multi-document query context
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 👨‍💻 Author
+
+**Vedik Kothari**
+
+---
+
+⭐ Star the repo if you found it useful!
