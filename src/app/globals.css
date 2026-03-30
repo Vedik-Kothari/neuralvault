@@ -1,26 +1,225 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:          #05070d;
+  --bg2:         #0a0e1a;
+  --bg3:         #0d1220;
+  --card:        rgba(13,18,32,0.7);
+  --border:      rgba(255,255,255,0.06);
+  --border-glow: rgba(124,58,237,0.4);
+  --purple:      #7c3aed;
+  --blue:        #0ea5e9;
+  --pink:        #f472b6;
+  --green:       #10b981;
+  --cyan:        #06b6d4;
+  --amber:       #f59e0b;
+  --red:         #ef4444;
+  --text:        #f0f6fc;
+  --muted:       #8b949e;
+  --font-head:   'Orbitron', sans-serif;
+  --font-ui:     'Space Grotesk', sans-serif;
+  --font-mono:   'JetBrains Mono', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100vh; width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(124,58,237,0.4);
+  border-radius: 4px;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Animated background ── */
+.bg-mesh {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(124,58,237,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(14,165,233,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 10%, rgba(244,114,182,0.07) 0%, transparent 60%),
+    var(--bg);
+  pointer-events: none;
+}
+
+/* Animated mesh overlay */
+.bg-mesh::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: grid-drift 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-drift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
+}
+
+/* ── Glow animations ── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.3); }
+  50%       { box-shadow: 0 0 40px rgba(124,58,237,0.6); }
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(124,58,237,0.3); }
+  50%       { border-color: rgba(124,58,237,0.8); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96%            { opacity: 0.8; }
+  97%            { opacity: 1; }
+  98%            { opacity: 0.6; }
+}
+
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%            { transform: translateY(-6px); opacity: 1; }
+}
+
+@keyframes counter-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes led-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+@keyframes heartbeat {
+  0%   { transform: scaleY(0.3); }
+  50%  { transform: scaleY(1.0); }
+  100% { transform: scaleY(0.3); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position:  1000px 0; }
+}
+
+/* ── Glass card ── */
+.glass {
+  background: var(--card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.glass-strong {
+  background: rgba(13,18,32,0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+}
+
+/* ── Glow utilities ── */
+.glow-purple { box-shadow: 0 0 30px rgba(124,58,237,0.3); }
+.glow-blue   { box-shadow: 0 0 30px rgba(14,165,233,0.3); }
+.glow-green  { box-shadow: 0 0 30px rgba(16,185,129,0.3); }
+
+/* ── Skeleton loader ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ── Cursor glow ── */
+.cursor-glow {
+  pointer-events: none;
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(124,58,237,0.15) 0%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.3s, height 0.3s;
+}
+
+/* ── Role colors ── */
+.role-admin    { --role-color: #7c3aed; --role-bg: rgba(124,58,237,0.15); }
+.role-manager  { --role-color: #0ea5e9; --role-bg: rgba(14,165,233,0.15); }
+.role-employee { --role-color: #10b981; --role-bg: rgba(16,185,129,0.15); }
+.role-intern   { --role-color: #06b6d4; --role-bg: rgba(6,182,212,0.15); }
+
+/* ── Scan line effect ── */
+.scan-line {
+  position: fixed; left: 0; right: 0; z-index: 1;
+  height: 2px;
+  background: linear-gradient(
+    90deg, transparent, rgba(124,58,237,0.4), transparent
+  );
+  animation: scan-line 4s linear infinite;
+  pointer-events: none;
+}
+
+/* ── Chat bubbles ── */
+.bubble-user {
+  background: linear-gradient(135deg,
+    rgba(124,58,237,0.25),
+    rgba(14,165,233,0.15)
+  );
+  border: 1px solid rgba(124,58,237,0.35);
+  border-radius: 20px 20px 4px 20px;
+}
+
+.bubble-ai {
+  background: rgba(13,18,32,0.8);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px 20px 20px 20px;
+  box-shadow: 0 0 30px rgba(124,58,237,0.1),
+              inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.bubble-denied {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 4px 20px 20px 20px;
+  animation: border-glow-red 2s ease infinite;
+}
+
+@keyframes border-glow-red {
+  0%,100% { border-color: rgba(239,68,68,0.25); }
+  50%      { border-color: rgba(239,68,68,0.6); }
 }

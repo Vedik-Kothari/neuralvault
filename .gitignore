@@ -1,6 +1,8 @@
-﻿node_modules
-.next
+node_modules/
+.next/
 .env.local
 .env.production
-out
-dist
+out/
+dist/
+*.log
+.DS_Store
